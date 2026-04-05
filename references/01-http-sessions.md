@@ -100,11 +100,23 @@ GET  /topic → same JSESSIONID sent → server finds session → retrieves User
 
 This is why `getSession(false)` is important — in the AuthenticationFilter, you don't want to create a new empty session just to check if someone is logged in. `getSession(false)` returns `null` if no session exists, which tells the filter the user is not authenticated.
 
+### Why JSESSIONID Survives Closing the Browser
+
+JSESSIONID is a **session cookie** (`maxAge = -1`), which means the browser should delete it when it closes. However, modern browsers with "session restore" features (like Chrome's **"Continue where you left off"** setting) preserve session cookies across restarts — the browser treats it as if it never closed.
+
+This doesn't cause a security issue because the **cookie** and the **session** are independent:
+- The cookie is just the key (stored in the browser)
+- The session data is on the server (controlled by `maxInactiveInterval`)
+
+Even if the cookie survives a browser restart, the server-side session expires after 30 minutes of inactivity. When the browser sends the old JSESSIONID, the server won't find a matching session — the AuthenticationFilter sees no valid session and redirects to `/login`.
+
+To manually clear session cookies: **Ctrl+Shift+Delete** → Clear cookies, or change Chrome's startup setting to "Open the New Tab page".
+
 ## Session Lifecycle
 
 ```
-Created  → request.getSession() called for first time
-Active   → Browser sends JSESSIONID, server finds session
-Timeout  → No requests for maxInactiveInterval seconds → auto-destroyed
+Created     → request.getSession() called for first time
+Active      → Browser sends JSESSIONID, server finds session
+Timeout     → No requests for maxInactiveInterval seconds → auto-destroyed
 Invalidated → session.invalidate() called → immediately destroyed
 ```

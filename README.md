@@ -256,6 +256,8 @@ You can also see it in the **Network** tab:
 2. Delete the cookie (right-click → Delete in DevTools)
 3. Refresh the page — you'll be redirected to login (the server can't find your session anymore)
 
+> **"I closed the browser but the cookie is still there!"** — JSESSIONID is a session cookie (`maxAge = -1`), which should be deleted when the browser closes. But if Chrome's "Continue where you left off" is enabled (Settings → On startup), the browser restores session cookies on reopen — so the cookie survives. This doesn't matter in practice: the **server-side session** still expires after 30 minutes of inactivity (`maxInactiveInterval`). Even if the old JSESSIONID cookie persists, the server won't recognize it — the AuthenticationFilter sees no valid session and redirects to `/login`.
+
 ### HttpSession API
 ```java
 // Create or get existing session
