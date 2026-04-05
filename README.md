@@ -38,7 +38,7 @@ Everything from Week 6 is provided complete:
 | SQL | Schema + seed data (now with 2 test users) | Provided |
 | References | 5 reference guides (sessions, filters, session utility, cookies*, forward vs redirect) | Provided |
 
-> *\*04-cookies.md is a preview for the Workshop, where you'll build a CookieUtil and use cookies for "remember username" functionality. The tutorial focuses on sessions, not cookies — but the reference is included so you can read ahead.*
+> **Note:** 04-cookies.md is a preview for the Workshop, where you'll build a CookieUtil and use cookies for "remember username" functionality. The tutorial focuses on sessions, not cookies — but the reference is included so you can read ahead.
 
 ---
 
@@ -210,6 +210,7 @@ Each HTTP request is independent — the server doesn't remember who sent the pr
 | **Size** | ~4 KB limit | No practical limit |
 | **Security** | User can see and edit it | Hidden from user |
 | **Lifetime** | Controlled by `maxAge` | Controlled by timeout |
+| **Use case** | Preferences, "remember me" | Authentication, sensitive data |
 
 **How they connect:** Sessions use ONE cookie internally — `JSESSIONID`. This cookie is just a random ID (like a locker key). The actual data (your User object) stays safely on the server.
 
