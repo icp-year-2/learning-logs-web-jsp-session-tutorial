@@ -98,6 +98,8 @@ import jakarta.servlet.http.Cookie;
 Cookie cookie = new Cookie("theme", "dark");
 cookie.setMaxAge(7 * 24 * 60 * 60);  // 7 days in seconds
 cookie.setPath("/");                   // available to entire app
+cookie.setHttpOnly(true);              // JavaScript can't access it (XSS protection)
+// cookie.setSecure(true);             // uncomment in production (HTTPS only)
 response.addCookie(cookie);            // send to browser
 ```
 
@@ -162,6 +164,8 @@ public class CookieUtil {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
         cookie.setPath("/");
+        cookie.setHttpOnly(true);   // prevents JavaScript access (XSS protection)
+        // cookie.setSecure(true);  // uncomment in production (HTTPS only)
         response.addCookie(cookie);
     }
 
@@ -186,6 +190,16 @@ public class CookieUtil {
         response.addCookie(cookie);
     }
 }
+```
+
+**Why `setHttpOnly(true)`?** Without it, JavaScript can read your cookies
+via `document.cookie`. If an attacker injects a script (XSS), they could
+steal cookie values. `HttpOnly` makes the cookie invisible to JavaScript —
+only the server can read it.
+
+**Why `setSecure(true)` is commented out?** In development we use `http://localhost`
+(not HTTPS). A `Secure` cookie is only sent over HTTPS, so it would never
+be sent in development. Enable it in production where HTTPS is used.
 ```
 
 ## Security Considerations
