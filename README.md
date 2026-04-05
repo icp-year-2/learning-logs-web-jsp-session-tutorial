@@ -375,3 +375,5 @@ After completing all 9 TODOs, rebuild (`mvn clean package cargo:run`) and verify
 | Login works but topics empty | Using wrong DAO method | Ensure TODO 6 uses `fetchAllTopicsByUserId` (not `fetchAllTopics`) |
 | "Username" still showing in header | JSP TODO not done | Complete TODOs 7-8 |
 | Entry pages still show "Username" | Expected — that's the Workshop | Entry pages are updated in the Workshop |
+
+*Informatics College Pokhara — Java Programming By Sandesh Hamal*
