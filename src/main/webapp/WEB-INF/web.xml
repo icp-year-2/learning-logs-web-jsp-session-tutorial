@@ -10,46 +10,7 @@
         <welcome-file>topic</welcome-file>
     </welcome-file-list>
 
-    <!-- ============================================================
-         TODO 8: Add Custom Error Page Configuration
-         ============================================================
-         Map HTTP 404 errors to your custom error404.jsp page.
-
-         Add an error-page block that tells Tomcat: "When a 404
-         error occurs, show /error404.jsp instead of the default page."
-
-           <error-page>
-               <error-code>404</error-code>
-               <location>/error404.jsp</location>
-           </error-page>
-
-         CONCEPT: web.xml is the deployment descriptor — it configures
-         how the web application behaves. The error-page element maps
-         HTTP error codes to custom pages.
-
-         The location path starts with / and is relative to the
-         webapp root. Since error404.jsp is in src/main/webapp/
-         (NOT in WEB-INF/), the path is simply /error404.jsp.
-
-         Files in WEB-INF/ are protected from direct access, but
-         error pages need to be accessible by the server directly,
-         which is why error404.jsp lives outside WEB-INF/.
-
-         You could also add error pages for other codes:
-           - 500 (Internal Server Error)
-           - 403 (Forbidden)
-
-         For development, we only handle 404 — other errors show
-         stack traces which are useful for debugging.
-
-         The complete code:
-
-           <error-page>
-               <error-code>404</error-code>
-               <location>/error404.jsp</location>
-           </error-page>
-         ============================================================ -->
-    <!-- Custom 404 error page (NEW for Week 6) -->
+    <!-- Custom 404 error page -->
     <error-page>
         <error-code>404</error-code>
         <location>/error404.jsp</location>
