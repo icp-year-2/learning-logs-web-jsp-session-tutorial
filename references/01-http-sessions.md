@@ -1,0 +1,96 @@
+# HTTP Sessions
+
+## Why Sessions Exist
+
+HTTP is **stateless** — each request is independent. The server doesn't remember who sent the previous request. Sessions solve this by creating a server-side storage area linked to a specific browser via a cookie.
+
+## How Sessions Work
+
+```
+1. Browser sends POST /login (username + password)
+2. Server authenticates → creates a Session object in memory
+3. Server sends response with Set-Cookie: JSESSIONID=abc123
+4. Browser stores the JSESSIONID cookie
+5. Every subsequent request: Browser sends Cookie: JSESSIONID=abc123
+6. Server looks up session abc123 → finds the stored User object
+```
+
+## HttpSession API
+
+### Creating / Getting a Session
+
+```java
+// Gets existing session OR creates a new one
+HttpSession session = request.getSession();
+
+// Gets existing session OR returns null (never creates)
+HttpSession session = request.getSession(false);
+```
+
+**When to use which:**
+- `getSession()` — when you want to CREATE a session (login)
+- `getSession(false)` — when you want to READ/CHECK a session (filter, read user)
+
+### Storing Data
+
+```java
+HttpSession session = request.getSession();
+session.setAttribute("user", userObject);    // Store any Java object
+session.setAttribute("role", "admin");       // Store a String
+```
+
+### Reading Data
+
+```java
+HttpSession session = request.getSession(false);
+if (session != null) {
+    User user = (User) session.getAttribute("user");  // Cast from Object
+    String role = (String) session.getAttribute("role");
+}
+```
+
+### Setting Timeout
+
+```java
+// Session expires after 30 minutes of inactivity
+session.setMaxInactiveInterval(30 * 60);  // seconds
+```
+
+### Destroying a Session
+
+```java
+HttpSession session = request.getSession(false);
+if (session != null) {
+    session.invalidate();  // Removes all attributes, destroys session
+}
+```
+
+## Session Scope in JSP (EL)
+
+```jsp
+<%-- Access session attributes in JSP using sessionScope --%>
+Welcome, ${sessionScope.user.username}!
+
+<%-- EL automatically calls user.getUsername() --%>
+<%-- "sessionScope" tells EL to look in the session, not request scope --%>
+
+<%-- You can also check if a session attribute exists --%>
+<c:if test="${not empty sessionScope.user}">
+    Logged in as ${sessionScope.user.username}
+</c:if>
+```
+
+## JSESSIONID Cookie
+
+The `JSESSIONID` is a **session cookie** (deleted when browser closes) that contains only the session ID. The actual data stays on the server.
+
+You never create `JSESSIONID` yourself — the server generates it automatically when you call `request.getSession()`.
+
+## Session Lifecycle
+
+```
+Created  → request.getSession() called for first time
+Active   → Browser sends JSESSIONID, server finds session
+Timeout  → No requests for maxInactiveInterval seconds → auto-destroyed
+Invalidated → session.invalidate() called → immediately destroyed
+```
