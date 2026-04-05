@@ -86,6 +86,20 @@ The `JSESSIONID` is a **session cookie** (deleted when browser closes) that cont
 
 You never create `JSESSIONID` yourself — the server generates it automatically when you call `request.getSession()`.
 
+### When Does JSESSIONID Get Created?
+
+Earlier than you might expect. JSPs call `request.getSession()` by default when they render (unless `<%@ page session="false" %>` is set). So when a user visits `/login` for the first time, the login page renders and a session is created — the `JSESSIONID` cookie appears in the browser **before the user even types a username**.
+
+At that point the session is **empty** — no user data is stored in it. After a successful login, `SessionUtil.setAttribute(request, "user", user)` stores the User object **inside** that same session. The JSESSIONID doesn't change — what changes is the data on the server.
+
+```
+GET  /login → JSP renders → session created (empty) → JSESSIONID cookie sent
+POST /login → password verified → User object stored in existing session
+GET  /topic → same JSESSIONID sent → server finds session → retrieves User
+```
+
+This is why `getSession(false)` is important — in the AuthenticationFilter, you don't want to create a new empty session just to check if someone is logged in. `getSession(false)` returns `null` if no session exists, which tells the filter the user is not authenticated.
+
 ## Session Lifecycle
 
 ```

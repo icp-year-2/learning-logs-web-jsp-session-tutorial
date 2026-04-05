@@ -232,21 +232,29 @@ Each HTTP request is independent — the server doesn't remember who sent the pr
 
 ### See It In Your Browser
 
-After completing the TODOs and logging in, you can see the session cookie:
+You can see the session cookie in DevTools:
 
 1. Open **DevTools** (F12 or right-click → Inspect)
 2. Go to **Application** tab (Chrome) or **Storage** tab (Firefox)
 3. Click **Cookies** → `http://localhost:9090`
 4. You'll see `JSESSIONID` with a value like `A1B2C3D4E5F6...`
 
-You can also see it in the **Network** tab:
-- Click any request → **Request Headers** → `Cookie: JSESSIONID=...`
-- On the login response → **Response Headers** → `Set-Cookie: JSESSIONID=...`
+**When does JSESSIONID appear?** You'll notice it shows up as soon as you visit `/login` — **before** you even type a username. That's because JSPs create a session by default when the page renders. At this point the session exists but is **empty** (no user stored in it). After you log in (TODO 4), `SessionUtil.setAttribute(request, "user", user)` stores the User object **inside** that same session. The JSESSIONID cookie doesn't change — what changes is the data on the server.
 
-Try this experiment:
+```
+GET /login  → Session created (empty), JSESSIONID cookie sent to browser
+POST /login → User object stored IN that existing session
+GET /topic  → Browser sends same JSESSIONID → server finds session → gets User
+```
+
+You can also see it in the **Network** tab:
+- On the first `/login` GET response → **Response Headers** → `Set-Cookie: JSESSIONID=...`
+- On subsequent requests → **Request Headers** → `Cookie: JSESSIONID=...`
+
+**Try this experiment:**
 1. Log in and note the JSESSIONID value
 2. Delete the cookie (right-click → Delete in DevTools)
-3. Refresh the page — you'll be redirected to login (server can't find your session)
+3. Refresh the page — you'll be redirected to login (the server can't find your session anymore)
 
 ### HttpSession API
 ```java
