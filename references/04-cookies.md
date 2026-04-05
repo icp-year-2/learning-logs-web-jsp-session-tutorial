@@ -7,11 +7,12 @@ The browser stores it and sends it back with every subsequent request to the
 same server.
 
 ```
-1. Browser → Server:  POST /login (email, password)
+1. Browser → Server:  POST /login (username, password)
 2. Server → Browser:  Set-Cookie: JSESSIONID=abc123
-3. Browser → Server:  GET /topic  (Cookie: JSESSIONID=abc123)
-4. Browser → Server:  GET /entry  (Cookie: JSESSIONID=abc123)
-   ... cookie sent automatically with every request ...
+                      Set-Cookie: lastUsername=testuser; Max-Age=604800
+3. Browser → Server:  GET /topic  (Cookie: JSESSIONID=abc123; lastUsername=testuser)
+4. Browser → Server:  GET /entry  (Cookie: JSESSIONID=abc123; lastUsername=testuser)
+   ... cookies sent automatically with every request ...
 ```
 
 ## Cookies vs Sessions
@@ -200,7 +201,6 @@ only the server can read it.
 **Why `setSecure(true)` is commented out?** In development we use `http://localhost`
 (not HTTPS). A `Secure` cookie is only sent over HTTPS, so it would never
 be sent in development. Enable it in production where HTTPS is used.
-```
 
 ## Security Considerations
 
