@@ -1,5 +1,7 @@
 # Cookies in Jakarta EE
 
+> **Workshop Preview:** This reference is included for the Workshop, where you'll build a CookieUtil and use cookies for "remember username" functionality. The tutorial focuses on sessions (not cookies) — but this guide is here so you can read ahead.
+
 ## What is a Cookie?
 
 A **cookie** is a small piece of data that the server sends to the browser.
