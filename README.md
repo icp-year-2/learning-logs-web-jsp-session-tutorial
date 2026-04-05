@@ -201,6 +201,52 @@ learning-logs-web-jsp-session-tutorial/
 ### HTTP is Stateless
 Each HTTP request is independent — the server doesn't remember who sent the previous request. Sessions solve this by storing data on the server, linked to a cookie (JSESSIONID) in the browser.
 
+### Sessions vs Cookies
+
+| | Cookie | Session |
+|---|---|---|
+| **Where** | Browser (client-side) | Server (server-side) |
+| **What's stored** | Small text (username, preferences) | Anything (User objects, lists) |
+| **Size** | ~4 KB limit | No practical limit |
+| **Security** | User can see and edit it | Hidden from user |
+| **Lifetime** | Controlled by `maxAge` | Controlled by timeout |
+
+**How they connect:** Sessions use ONE cookie internally — `JSESSIONID`. This cookie is just a random ID (like a locker key). The actual data (your User object) stays safely on the server.
+
+```
+1. Browser → POST /login (username, password)
+2. Server: "Password correct!" → creates session (server-side locker)
+   → stores User object in session
+   → sends back: Set-Cookie: JSESSIONID=ABC123
+3. Browser saves JSESSIONID cookie automatically
+4. Browser → GET /topic (Cookie: JSESSIONID=ABC123)
+5. Server reads ABC123 → finds the session → gets User object
+   → "This is testuser — show their topics"
+6. Every subsequent request: browser keeps sending JSESSIONID=ABC123
+```
+
+**On logout:** `session.invalidate()` destroys the server-side data. The browser still has the JSESSIONID cookie, but the server no longer recognizes it — the AuthenticationFilter sees no valid session and redirects to `/login`.
+
+> **Note:** The JSESSIONID cookie contains NO user data — just a random ID. All actual data stays on the server. That's why sessions are secure for authentication. In the Workshop, you'll create your OWN cookies (like remembering the last username on the login form) — a different use case from the automatic JSESSIONID.
+
+### See It In Your Browser
+
+After completing the TODOs and logging in, you can see the session cookie:
+
+1. Open **DevTools** (F12 or right-click → Inspect)
+2. Go to **Application** tab (Chrome) or **Storage** tab (Firefox)
+3. Click **Cookies** → `http://localhost:9090`
+4. You'll see `JSESSIONID` with a value like `A1B2C3D4E5F6...`
+
+You can also see it in the **Network** tab:
+- Click any request → **Request Headers** → `Cookie: JSESSIONID=...`
+- On the login response → **Response Headers** → `Set-Cookie: JSESSIONID=...`
+
+Try this experiment:
+1. Log in and note the JSESSIONID value
+2. Delete the cookie (right-click → Delete in DevTools)
+3. Refresh the page — you'll be redirected to login (server can't find your session)
+
 ### HttpSession API
 ```java
 // Create or get existing session
