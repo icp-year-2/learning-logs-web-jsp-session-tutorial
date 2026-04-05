@@ -342,6 +342,28 @@ Open `http://localhost:9090/learning-logs/topic`
 
 ---
 
+## Test Cases
+
+After completing all 9 TODOs, rebuild (`mvn clean package cargo:run`) and verify:
+
+| # | Test | Expected Result |
+|---|------|-----------------|
+| 1 | Visit `http://localhost:9090/learning-logs/topic` without logging in | Redirected to `/login` (AuthenticationFilter blocks access) |
+| 2 | Visit `http://localhost:9090/learning-logs/register` without logging in | Register page loads normally (not blocked by filter) |
+| 3 | Log in as `testuser` / `Test@123` | Redirected to `/topic`, see 5 topics (Python, Web Development, Data Science, Machine Learning, Cybersecurity) |
+| 4 | Check the header on topic list page | Shows "testuser" (not static "Username") with a working Logout link |
+| 5 | Click "Add New Topic" and check header | Same — "testuser" and Logout link visible on the add/edit page |
+| 6 | Add a new topic "Test Topic" | Topic created and appears in list (belongs to testuser) |
+| 7 | Search for "python" | Only shows matching topics for testuser, not all users |
+| 8 | Open DevTools → Application → Cookies | `JSESSIONID` cookie present |
+| 9 | Click Logout → confirm dialog | Redirected to `/login`, session destroyed |
+| 10 | Press browser Back button after logout | Redirected to `/login` (session is invalid, filter blocks access) |
+| 11 | Log in as `demouser` / `Test@123` | See 3 different topics (Java, Databases, Cloud Computing) — not testuser's topics |
+| 12 | Verify testuser's "Test Topic" is not visible | Topic isolation confirmed — each user sees only their own topics |
+| 13 | Try visiting `/login` while already logged in | Redirected to `/topic` (filter prevents logged-in users from seeing login page) |
+
+---
+
 ## Troubleshooting
 
 | Problem | Cause | Fix |
