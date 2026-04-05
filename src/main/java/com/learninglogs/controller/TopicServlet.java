@@ -141,10 +141,9 @@ public class TopicServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String action = request.getParameter("action");
-        User user = (User) SessionUtil.getAttribute(request, "user");
 
         if (action == null) {
-            ArrayList<Topic> topics = topicDao.fetchAllTopicsByUserId(user.getId());
+            ArrayList<Topic> topics = topicDao.fetchAllTopics();
             request.setAttribute("topics", topics);
             request.getRequestDispatcher("/WEB-INF/views/topic-list.jsp")
                    .forward(request, response);
@@ -164,9 +163,9 @@ public class TopicServlet extends HttpServlet {
             String keyword = request.getParameter("search");
             ArrayList<Topic> topics;
             if (keyword == null || keyword.trim().isEmpty()) {
-                topics = topicDao.fetchAllTopicsByUserId(user.getId());
+                topics = topicDao.fetchAllTopics();
             } else {
-                topics = topicDao.searchTopicsByUserId(user.getId(), keyword.trim());
+                topics = topicDao.searchTopics(keyword.trim());
             }
             request.setAttribute("topics", topics);
             request.setAttribute("searchKeyword", keyword);
@@ -192,11 +191,10 @@ public class TopicServlet extends HttpServlet {
                 return;
             }
 
-            // UPDATED for Week 7 — get userId from session instead of hardcoded 1
-            // Week 5-6 was: newTopic.setUserId(1);
+            // UPDATED for Week 5 — create Topic and set userId before insert
+            // Week 4 was: topicDao.insertTopic(new Topic(topicName.trim()))
             Topic newTopic = new Topic(topicName.trim());
-            User user = (User) SessionUtil.getAttribute(request, "user");
-            newTopic.setUserId(user.getId());
+            newTopic.setUserId(1);  // Hardcoded userId=1 until session management in Week 7
             boolean success = topicDao.insertTopic(newTopic);
 
             if (!success) {

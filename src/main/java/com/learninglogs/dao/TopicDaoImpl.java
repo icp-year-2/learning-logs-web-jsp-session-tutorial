@@ -277,58 +277,11 @@ public class TopicDaoImpl implements TopicDao {
     // ============================================================
     @Override
     public ArrayList<Topic> fetchAllTopicsByUserId(int userId) {
-        ArrayList<Topic> topics = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            String sql = "SELECT * FROM topics WHERE user_id = ?";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setInt(1, userId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Topic topic = new Topic(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getInt("user_id"),
-                    rs.getTimestamp("created_at"),
-                    rs.getTimestamp("updated_at")
-                );
-                topics.add(topic);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error fetching topics by user: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(conn);
-        }
-        return topics;
+        return new ArrayList<>();
     }
 
     @Override
     public ArrayList<Topic> searchTopicsByUserId(int userId, String keyword) {
-        ArrayList<Topic> topics = new ArrayList<>();
-        Connection conn = null;
-        try {
-            conn = DatabaseConnection.getConnection();
-            String sql = "SELECT * FROM topics WHERE user_id = ? AND LOWER(name) LIKE LOWER(?)";
-            PreparedStatement statement = conn.prepareStatement(sql);
-            statement.setInt(1, userId);
-            statement.setString(2, "%" + keyword + "%");
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                Topic topic = new Topic(
-                    rs.getInt("id"),
-                    rs.getString("name"),
-                    rs.getInt("user_id"),
-                    rs.getTimestamp("created_at"),
-                    rs.getTimestamp("updated_at")
-                );
-                topics.add(topic);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error searching topics by user: " + e.getMessage());
-        } finally {
-            DatabaseConnection.closeConnection(conn);
-        }
-        return topics;
+        return new ArrayList<>();
     }
 }

@@ -94,7 +94,6 @@ public class LoginServlet extends HttpServlet {
         //   SessionUtil.setAttribute(request, "user", user);
         //
         // ============================================================
-        SessionUtil.setAttribute(request, "user", user);
 
         response.sendRedirect(request.getContextPath() + "/topic");
     }
