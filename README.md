@@ -13,7 +13,7 @@ Right now, the app has a critical gap:
 | What Works | What's Missing |
 |-----------|---------------|
 | Users can register and log in | Login doesn't persist — refreshing loses the login state |
-| Topics have a `user_id` column | TopicServlet hardcodes `userId=1` — everyone sees the same topics |
+| Topics have a `user_id` column | TopicServlet uses `fetchAllTopics()` with no user filter — ALL topics from every user are visible |
 | Header shows "Username" | It's static text — doesn't show who's actually logged in |
 | Logout button exists | It links to `#` — clicking it does nothing |
 | Anyone can access `/topic` directly | No protection — unauthenticated users can bypass login |
@@ -36,7 +36,9 @@ Everything from Week 6 is provided complete:
 | Error page | `error404.jsp` + web.xml config | Provided |
 | CSS | All 7 CSS files | Provided |
 | SQL | Schema + seed data (now with 2 test users) | Provided |
-| References | 5 reference guides (sessions, filters, cookies, etc.) | Provided |
+| References | 5 reference guides (sessions, filters, session utility, cookies*, forward vs redirect) | Provided |
+
+> *\*04-cookies.md is a preview for the Workshop, where you'll build a CookieUtil and use cookies for "remember username" functionality. The tutorial focuses on sessions, not cookies — but the reference is included so you can read ahead.*
 
 ---
 
@@ -144,11 +146,11 @@ learning-logs-web-jsp-session-tutorial/
 │   ├── learninglog.sql                     (schema — unchanged from Week 5)
 │   └── seed.sql                            (UPDATED — 2 test users for isolation testing)
 ├── references/
-│   ├── 01-http-sessions.md
-│   ├── 02-servlet-filters.md
-│   ├── 03-session-utility-pattern.md
-│   ├── 04-cookies.md
-│   └── 05-forward-vs-redirect.md
+│   ├── 01-http-sessions.md                   (Tutorial — core concept)
+│   ├── 02-servlet-filters.md                 (Tutorial — for TODO 9)
+│   ├── 03-session-utility-pattern.md         (Tutorial — for TODO 1)
+│   ├── 04-cookies.md                         (Workshop preview — cookies used in Workshop)
+│   └── 05-forward-vs-redirect.md             (Tutorial — filter/servlet context)
 ├── src/main/
 │   ├── java/com/learninglogs/
 │   │   ├── controller/
@@ -277,9 +279,9 @@ mvn clean package cargo:run
 ### 3. Access the App
 Open `http://localhost:9090/learning-logs/topic`
 
-**Before completing the TODOs:** The app works but login doesn't persist, topics aren't user-scoped, and anyone can access any page directly.
+**Before completing the TODOs:** The app works but login doesn't persist, all topics from every user are visible (no user filtering), the header shows static "Username" text, and anyone can access any page directly by URL.
 
-**After completing all TODOs:** Login persists, each user sees only their topics, and unauthenticated users are redirected to login.
+**After completing all TODOs:** Login persists via sessions, each user sees only their own topics, the header shows the logged-in username with a working logout link, and unauthenticated users are automatically redirected to the login page.
 
 ---
 
