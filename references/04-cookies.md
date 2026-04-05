@@ -39,6 +39,56 @@ When you call `request.getSession()`, the server:
 
 You **never** manage JSESSIONID yourself — the server handles it automatically.
 
+## JSESSIONID vs Custom Cookies — They Are Separate
+
+This is a common point of confusion. JSESSIONID and your custom cookies are
+**completely independent**. They just happen to both be cookies.
+
+```
+Browser's cookie storage for localhost:9090:
+
+┌──────────────┬────────────────────┬───────────────┬─────────────┐
+│ Name         │ Value              │ Expires       │ Created By  │
+├──────────────┼────────────────────┼───────────────┼─────────────┤
+│ JSESSIONID   │ A1B2C3D4E5F6      │ Session*      │ Tomcat      │
+│ lastUsername  │ testuser           │ 7 days        │ YOUR code   │
+│ theme         │ dark               │ 30 days       │ YOUR code   │
+└──────────────┴────────────────────┴───────────────┴─────────────┘
+
+* "Session" = deleted when browser closes
+```
+
+Every request sends **ALL** cookies for that domain:
+
+```
+GET /topic HTTP/1.1
+Cookie: JSESSIONID=A1B2C3D4E5F6; lastUsername=testuser; theme=dark
+```
+
+The server reads them independently:
+
+```java
+// JSESSIONID — handled automatically by the server
+// You never read this cookie directly. Instead:
+User user = (User) SessionUtil.getAttribute(request, "user");
+// Server uses JSESSIONID internally to find the session → gets User object
+
+// Custom cookie — YOU read this directly
+String lastUsername = CookieUtil.getCookieValue(request, "lastUsername");
+// Reads the cookie value "testuser" directly from the request
+```
+
+**Key difference:**
+- JSESSIONID is just a **key** — the data (User object) lives on the server
+- Custom cookies **ARE** the data — stored in the browser, visible to the user
+
+That's why you'd never put a password in a cookie, but a username is fine.
+
+**When JSESSIONID disappears** (logout/session expires), your custom cookies
+**still exist** — they have their own independent lifetime. For example,
+`lastUsername` survives logout because it has a 7-day maxAge, so the login
+form can pre-fill the username field even after the session is gone.
+
 ## Creating Cookies in Java
 
 ```java
