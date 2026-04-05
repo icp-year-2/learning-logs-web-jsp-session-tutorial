@@ -124,10 +124,18 @@ import java.util.ArrayList;
 //       }
 //   }
 //
-// The doPost "add" change:
+// The doPost "add" action change (replace the hardcoded userId=1 block):
 //
-//   User user = (User) SessionUtil.getAttribute(request, "user");
-//   newTopic.setUserId(user.getId());
+//   BEFORE:
+//     Topic newTopic = new Topic(topicName.trim());
+//     newTopic.setUserId(1);  // Hardcoded
+//     boolean success = topicDao.insertTopic(newTopic);
+//
+//   AFTER:
+//     Topic newTopic = new Topic(topicName.trim());
+//     User user = (User) SessionUtil.getAttribute(request, "user");
+//     newTopic.setUserId(user.getId());
+//     boolean success = topicDao.insertTopic(newTopic);
 //
 // ============================================================
 @WebServlet("/topic")
